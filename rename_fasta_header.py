@@ -15,12 +15,21 @@ class MyParser(argparse.ArgumentParser):
 
 parser = MyParser()
 parser.add_argument("file_dir",help="path to fasta files that need to be renamed")
+parser.add_argument("--sars","-s",help="add \"hCoV-19/USA/\" to beginning and \"/<value>\" to end",type=str) 
 
 args = parser.parse_args()
+
+if(args.sars):
+    prefix = "hCoV-19/USA/"
+    postfix = "/" + args.sars
+else:
+    prefix = ""
+    postfix = ""
 
 for root,dirs,files in os.walk(args.file_dir):
     for file in files:
         if ".fa" in files or ".fasta" in file:
+            header_name = ">" + prefix + file.split(".")[0] + postfix
             current_fasta_path = os.path.join(root,file)
             temp_fasta_path = os.path.join(root,"temp.fasta")
             print(f"Found fasta: {current_fasta_path}")
@@ -30,7 +39,10 @@ for root,dirs,files in os.walk(args.file_dir):
                     counter = 1
                     for line in fasta_file:
                         if line.startswith('>'):
-                            out_fasta.write(f">"+file.split('.')[0]+"_"+str(counter)+'\n')
+                            if counter == 1:
+                                out_fasta.write(header_name+'\n')
+                            else:
+                                out_fasta.write(header_name+str(counter)+'\n')
                             counter += 1
                         else:
                             out_fasta.write(line)
