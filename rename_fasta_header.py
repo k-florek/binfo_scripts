@@ -28,7 +28,7 @@ else:
 
 for root,dirs,files in os.walk(args.file_dir):
     for file in files:
-        if ".fa" in files or ".fasta" in file:
+        if ".fa" in file or ".fasta" in file:
             header_name = ">" + prefix + file.split(".")[0] + postfix
             current_fasta_path = os.path.join(root,file)
             temp_fasta_path = os.path.join(root,"temp.fasta")
